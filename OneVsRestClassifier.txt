@@ -1,0 +1,42 @@
+x=df.iloc[:,1]
+y= df.iloc[:,0]
+
+from sklearn.feature_extraction.text import CountVectorizer
+cv = CountVectorizer(analyzer = 'word',lowercase = True)
+x_poly = cv.fit_transform(x).toarray()
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x_poly,y,train_size =0.80,random_state=42)
+
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn import tree
+from sklearn.naive_bayes import MultinomialNB
+base_clf = MultinomialNB(alpha=1)
+
+clf6 = tree.DecisionTreeClassifier()
+clf6 = OneVsRestClassifier(clf6).fit(x_train, y_train)
+
+clf2 = OneVsRestClassifier(base_clf).fit(x_train, y_train)
+
+clf5 = OneVsRestClassifier(LogisticRegression()).fit(x_train, y_train)
+
+y_pred2 = clf2.predict(x_test)
+y_pred5 = clf5.predict(x_test)
+y_pred6 = clf6.predict(x_test)
+
+from sklearn.metrics import confusion_matrix 
+cm = confusion_matrix(y_test, y_pred2)
+print(cm)
+
+cm5 = confusion_matrix(y_test, y_pred5)
+print(cm5)
+
+cm6 = confusion_matrix(y_test, y_pred5)
+print(cm6)
+
+from sklearn.metrics import accuracy_score, classification_report
+print("OneVsRestClassifier with DecisionTree:",accuracy_score(y_test, y_pred2))
+print("OneVsRestClassifier with MultinomialNB",accuracy_score(y_test, y_pred5))
+print("OneVsRestClassifier with LogisticRegression",accuracy_score(y_test, y_pred6))
+# print(classification_report(y_pred2, y_test))
+# print(classification_report(y_pred5, y_test))
