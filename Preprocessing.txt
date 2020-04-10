@@ -1,0 +1,92 @@
+import pandas as pd
+import nltk
+import sklearn
+df=pd.read_csv("project.csv")
+
+df.dropna(inplace = True)
+
+#df=df.apply(lambda x: x.astype(str).str.lower())
+#df.dtypes
+#df['Comment']=df['Comment'].str.lower()
+
+
+df['teaching.1'] = df['teaching.1'].str.lower()
+df['coursecontent.1'] = df['coursecontent.1'].str.lower()
+df['Examination'] = df['Examination'].str.lower()
+df['labwork.1'] = df['labwork.1'].str.lower()
+df['library_facilities.1'] = df['library_facilities.1'].str.lower()
+df['extracurricular.1'] = df['extracurricular.1'].str.lower()
+    
+from nlppreprocess import NLP                            #remove stop words
+nlp = NLP()
+df['teaching.1'] = df['teaching.1'].apply(nlp.process)
+df['coursecontent.1'] = df['coursecontent.1'].apply(nlp.process)
+df['Examination'] = df['Examination'].apply(nlp.process)
+df['labwork.1'] = df['labwork.1'].apply(nlp.process)
+df['library_facilities.1'] = df['library_facilities.1'].apply(nlp.process)
+df['extracurricular.1'] = df['extracurricular.1'].apply(nlp.process)
+
+from bs4 import BeautifulSoup                            #remove tagshttps://www.reddit.com/r/learnpython/comments/an62wx/how_to_remove_html_from_pandas_dataframe_without/
+rows1 = []
+rows2 = []
+rows3 = []
+rows4 = []
+rows5 = []
+rows6 = []
+for t in df['teaching.1']:
+    soup = BeautifulSoup(t,"html.parser")
+    rows1.append(soup.get_text())
+df['teaching.1'] = rows1
+
+for t in df['coursecontent.1']:
+    soup = BeautifulSoup(t,"html.parser")
+    rows2.append(soup.get_text())
+df['coursecontent.1'] = rows2
+
+for t in df['Examination']:
+    soup = BeautifulSoup(t,"html.parser")
+    rows3.append(soup.get_text())
+df['Examination'] = rows3
+
+for t in df['labwork.1']:
+    soup = BeautifulSoup(t,"html.parser")
+    rows4.append(soup.get_text())
+df['labwork.1'] = rows4
+
+for t in df['library_facilities.1']:
+    soup = BeautifulSoup(t,"html.parser")
+    rows5.append(soup.get_text())
+df['library_facilities.1'] = rows5
+
+for t in df['extracurricular.1']:
+    soup = BeautifulSoup(t,"html.parser")
+    rows6.append(soup.get_text())
+df['extracurricular.1'] = rows6
+
+# from nltk.stem import WordNetLemmatizer
+# w_tokenizer = nltk.tokenize.WhitespaceTokenizer()
+# lemmatizer=WordNetLemmatizer()
+# def word_lemmatizer(text):
+#   lem_text = [lemmatizer.lemmatize(i) for i in w_tokenizer.tokenize(text)]
+#   return lem_text
+# df['teaching.1']=df['teaching.1'].apply(lambda x: word_lemmatizer(x))
+# df['coursecontent.1']=df['coursecontent.1'].apply(lambda x: word_lemmatizer(x))
+# df['Examination']=df['Examination'].apply(lambda x: word_lemmatizer(x))
+# df['labwork.1']=df['labwork.1'].apply(lambda x: word_lemmatizer(x))
+# df['library_facilities.1']=df['library_facilities.1'].apply(lambda x: word_lemmatizer(x))
+# df['extracurricular.1']=df['extracurricular.1'].apply(lambda x: word_lemmatizer(x))
+
+print("Loading Dataset.....")
+import time
+time.sleep(2)
+print("Removing Null values......")
+time.sleep(2)
+print("Converting data into lowercase.....")
+time.sleep(2)
+print("Removing stopwords.....")
+time.sleep(2)
+print("Removing Hashtags and HTML links.....")
+time.sleep(2)
+print("Removing Punctuation.....")
+time.sleep(2)
+print("Done with Preprocessing!!!!")
