@@ -1,0 +1,39 @@
+x=df.iloc[:,1]
+y= df.iloc[:,0]
+
+from sklearn.feature_extraction.text import CountVectorizer
+cv = CountVectorizer(analyzer = 'word',lowercase = True)
+x_poly = cv.fit_transform(x).toarray()
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x_poly,y,train_size =0.80,random_state=42)
+
+from sklearn.ensemble import VotingClassifier
+from sklearn import model_selection
+seed = 7
+kfold = model_selection.KFold(n_splits=50, random_state=seed)
+# create the sub models
+estimators = []
+model1 = LogisticRegression()
+estimators.append(('logistic', model1))
+model2 = tree.DecisionTreeClassifier()
+estimators.append(('cart', model2))
+model3 = MultinomialNB(alpha=1)
+estimators.append(('NB', model3))
+model4 = OneVsRestClassifier(model1)
+estimators.append(('OneVsRest1', model4))
+model5 = OneVsRestClassifier(model2)
+estimators.append(('OneVsRest2', model5))
+model6 = OneVsRestClassifier(model2)
+estimators.append(('OneVsRest3', model6))
+# create the ensemble model
+ensemble = VotingClassifier(estimators, voting = "hard")
+#results = model_selection.cross_val_score(ensemble, x_poly, y, cv=kfold)
+
+print(results.mean())
+
+#fit model to training data
+ensemble.fit(x_train, y_train)
+#test our model on the test data
+ensemble.score(x_test, y_test)
+
